@@ -1,0 +1,57 @@
+DETECTING
+1- TALKING
+#2- USING -UTILIZING
+3- TOUCHING
+4- EXAMINING - 
+5- NEAR
+6- STANDING_TOGETHER
+7- WALKING_TOGETHER
+#8- QUEUEING
+9- BROWSING
+10- LOITERING
+11- CROUCHING
+12- BENDING
+
+
+yOLO pOSE
+
+NOT DETECTING
+1- HOLDING
+2- REACHING
+3- PICKING
+4- DROPPING
+5- PLACING
+6- CARRYING
+7- HANDSHAKING
+8- HUGGING
+9- WAITING
+
+Depth distance = same (same class)
+
+
+
+
+INTERACTION          │ TRIGGER MOMENT
+─────────────────────┼──────────────────────────────────────────
+HOLDING              │ Object at hand level, close depth, high overlap
+TOUCHING             │ Physical contact, close depth, body overlap
+USING                │ Using electronics/tools at hand level
+NEAR                 │ Close proximity without physical contact
+TALKING              │ Two people facing each other, aligned faces
+EXAMINING            │ Object at face level, looking at it
+REACHING             │ Arm's length distance, extending toward object
+PICKING              │ Object moves UP + holding starts
+DROPPING             │ Object moves DOWN + holding ends
+PLACING              │ Object placed on surface (depth increases)
+CARRYING             │ Holding + person walking
+STANDING_TOGETHER    │ Group stationary within proximity
+WALKING_TOGETHER     │ Group moving together
+QUEUEING             │ 3+ people in linear arrangement
+HANDSHAKING          │ Hand regions overlap, moderate distance
+HUGGING              │ Very high body overlap (>40%)
+BROWSING             │ Examined 2+ different objects over time
+WAITING              │ Stationary near checkout/counter
+LOITERING            │ Same area for 30+ seconds
+SITTING_ON           │ On furniture, low aspect ratio
+CROUCHING            │ Very low aspect ratio (<1.5)
+BENDING              │ Moderately low aspect ratio (1.5-2.0)

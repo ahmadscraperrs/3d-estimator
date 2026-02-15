@@ -1,0 +1,13 @@
+# GPU Installation Requirements (CUDA 11.8)
+# 
+# Usage:
+#   pip install -r requirements-gpu-cu118.txt
+#
+# For CUDA 11.8 GPUs
+
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch
+torchvision
+
+# Include base requirements
+-r requirements-base.txt

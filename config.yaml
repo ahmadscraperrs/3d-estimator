@@ -1,0 +1,120 @@
+# Analytics Service Configuration
+
+Kafka:
+  BootstrapServers: "10.10.10.100:9092"
+  Consumer:
+    GroupId: "engagement-analytics-group"
+    AutoOffsetReset: "latest"
+    SessionTimeoutMs: 30000  # 30 seconds (increased for YOLO processing)
+    HeartbeatIntervalMs: 9000  # 9 seconds (must be < 1/3 of session timeout)
+    MaxPollIntervalMs: 300000  # 5 minutes
+  Topics:
+    Input: "video.insights.person"
+    Output: "video.insights.person.engagement"
+
+Logging:
+  Level: INFO
+  File: "logs/engagement_analytics_{time:YYYY-MM-DD}.log"
+
+Model:
+  Path: "yolo11n.pt"
+  Conf: 0.3
+  # PersonClassId and ObjectClasses moved to core/constants.py as defaults
+
+# Human-Object Interaction (HOI) Detection Configuration
+# Replaces traditional IoU-based engagement with depth-aware HOI detection
+HOI:
+  # Enable HOI-based engagement detection
+  Enabled: true
+  
+  # Depth Model Configuration (Depth Anything v2)
+  DepthModel:
+    # Model variant: "small" (fast), "base" (balanced), "large" (accurate)
+    Variant: "small"
+    # Device: "auto" (CUDA if available), "cuda", "cpu"
+    Device: "auto"
+    # Maximum depth value for metric depth (meters)
+    MaxDepth: 20.0
+    # Custom checkpoint path (optional, uses default if not set)
+    # CheckpointPath: "checkpoints/depth_anything_v2_vits.pth"
+  
+  # Interaction Detection Thresholds (Static Interactions)
+  InteractionThresholds:
+    # Maximum depth difference for physical interaction (relative units 0-1)
+    DepthProximity: 0.15
+    # Maximum depth difference for "near" classification
+    NearThreshold: 0.3
+    # Minimum confidence to report an interaction
+    MinConfidence: 0.5
+    # Minimum 2D overlap ratio for interaction
+    SpatialOverlap: 0.1
+    # Maximum distance ratio for talking detection
+    TalkingDistanceRatio: 2.0
+  
+  # Temporal Settings
+  Temporal:
+    # Number of frames for temporal smoothing (filter brief detections)
+    SmoothingFrames: 3
+    # Seconds before considering interaction ended
+    InactivityTimeout: 1.0
+
+  # Motion Tracking Configuration (for PICKING, DROPPING, CARRYING, etc.)
+  MotionTracking:
+    # Number of frames to keep in position history
+    HistorySize: 10
+    # Minimum velocity (pixels/second) to consider entity as moving
+    VelocityThreshold: 20.0
+    # Maximum velocity (pixels/second) to consider entity as stationary
+    StationaryThreshold: 5.0
+    # Minimum upward velocity for PICKING detection
+    PickingVelocityThreshold: 15.0
+    # Minimum velocity for person to be considered CARRYING
+    CarryingVelocityThreshold: 10.0
+
+  # Group Interaction Settings (STANDING_TOGETHER, WALKING_TOGETHER, QUEUEING)
+  GroupInteractions:
+    # Enable group interaction detection
+    Enabled: true
+    # Maximum distance (pixels) between people to be considered a group
+    ProximityThreshold: 200.0
+    # Minimum number of people to form a group
+    MinGroupSize: 2
+    # Linearity threshold for queue detection (0-1, lower = more strict)
+    QueueLinearityThreshold: 0.8
+
+  # Retail Analytics Settings (BROWSING, WAITING, LOITERING)
+  RetailAnalytics:
+    # Enable retail-specific behavior detection
+    Enabled: true
+    # Minimum number of objects examined to classify as BROWSING
+    BrowsingObjectThreshold: 2
+    # Seconds before classifying as LOITERING
+    LoiteringTimeThreshold: 30.0
+    # Maximum displacement (pixels) from initial position for LOITERING
+    LoiteringMaxDisplacement: 100.0
+    # Maximum distance (pixels) to service area for WAITING detection
+    WaitingProximityThreshold: 200.0
+
+  # Posture Detection Settings (SITTING_ON, CROUCHING, BENDING)
+  # NOTE: Without pose estimation, posture detection uses bounding box aspect ratio
+  # which can be noisy. Set Enabled: false to disable if too many false positives.
+  PostureDetection:
+    # Enable posture-based interaction detection
+    Enabled: false  # Disabled by default - enable if needed
+    # Aspect ratio thresholds for posture classification
+    # Normal standing: ~2.5-3.5, Sitting: ~1.0-1.6, Crouching: ~0.8-1.2
+    # LOWERED thresholds to reduce false positives
+    SittingAspectRatioMax: 1.6    # was 2.0 - sitting has lower aspect ratio
+    CrouchingAspectRatioMax: 1.2  # was 1.5 - crouching is very squat
+    BendingAspectRatioMax: 1.5    # was 2.0 - bending widens the bbox
+    # Maximum distance to furniture for SITTING_ON detection
+    FurnitureProximityThreshold: 200.0
+
+# Legacy Engagement Settings (kept for backward compatibility)
+Engagement:
+  # Enable engagement detection by default (even if ENGAGEMENT service not in event services)
+  EnableByDefault: false
+  # Note: IoU-based detection is replaced by HOI depth-aware detection
+  # These settings are kept for reference but not used when HOI.Enabled is true
+  EnableTalkingCheck: true
+  PublishTalkingWithoutIou: false

@@ -1,0 +1,13 @@
+# GPU Installation Requirements (CUDA 12.4)
+# 
+# Usage:
+#   pip install -r requirements-gpu-cu124.txt
+#
+# For CUDA 12.4 GPUs (Latest)
+
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch
+torchvision
+
+# Include base requirements
+-r requirements-base.txt
